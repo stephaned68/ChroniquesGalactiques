@@ -319,9 +319,13 @@ button[type='roll'].sheet-iconbtn::before {
   content: '';
 }
 
-button.sheet-iconbtn {
+span.sheet-iconbtn {
   font-family: pictos;
   font-size: large !important;
+}
+
+.sheet-iconbtn:hover {
+  color: orange;
 }
 
 img.sheet-iconimg {
@@ -578,7 +582,8 @@ input[type='checkbox'].sheet-block-switch:checked + span::before {
 
 .sheet-options-flag:hover + span,
 .sheet-options-flag:checked + span {
-  color: #c3996b;
+  /* color: #c3996b; */
+  color: orange;
   display: block;
 }
 
@@ -609,6 +614,18 @@ div.sheet-scroll-300 {
   overflow-y: scroll; 
   overflow-x: hidden; 
   max-height: 300px;
+}
+
+textarea.sheet-statblock {
+  margin: 5px;
+  border: 1px dashed;
+  height: 12em;
+}
+
+textarea.sheet-sbresult {
+  border: none; 
+  background-color: transparent;
+  height: 6em;
 }
 
 /* TEMPLATES */
