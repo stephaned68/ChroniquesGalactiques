@@ -2,8 +2,8 @@
 
 Cliquer sur un lien pour consulter la documentation correspondante :
 
-[Import de statblock]({{ site.baseurl }}/import-sbnpc)
+[Import de statblock de PNJ]({{ site.baseurl }}/import-sbnpc)
 
-[Import de statblock]({{ site.baseurl }}/import-sbship) 
+[Import de statblock de Vaisseau]({{ site.baseurl }}/import-sbship) 
 
-[Import de statblock]({{ site.baseurl }}/import-sbmech)
+[Import de statblock de Mécha]({{ site.baseurl }}/import-sbmech)
