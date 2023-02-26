@@ -134,7 +134,7 @@
     <div style="width: 420px; vertical-align: middle; text-align: center">
       <img
         width="320px"
-        title="Version 4.1.0 - 18/02/2023"
+        title="Version 4.1.0 - 26/02/2023"
         src="https://raw.githubusercontent.com/Roll20/roll20-character-sheets/master/ChroniquesGalactiques/cog2_logo.png"
       />
       <img width="90px" height="90px" name="attr_character_token" />
@@ -6332,8 +6332,8 @@
     </div>
     <div class="sheet-tab-content sheet-tab2">
       <div class="sheet-row">
-        <span class="sheet-align-right"
-          ><button
+        <span class="sheet-align-right">
+          <button
             type="action"
             class="sheet-flatbtn sheet-iconbtn"
             name="act_resetattrib"
@@ -6374,6 +6374,10 @@
               title="@{INIT_VAR}"
               value="[[1d6!]]"
             />
+          </li>
+          <li>
+            <span class="textbase">Utiliser COlib</span>&nbsp;
+            <input type="checkbox" name="attr_colib" value="1">
           </li>
         </ul>
       </div>
@@ -8141,7 +8145,7 @@
         <div class="sheet-col">
           <ul>
             <li>
-              Jets
+              <span class="textbase">Jets</span>&nbsp;
               <select
                 class="sheet-carac"
                 style="width: 80px"
@@ -8166,13 +8170,17 @@
               </select>
             </li>
             <li>
-              Initiative variable
+              <span class="textbase">Initiative variable</span>&nbsp;
               <input
                 type="checkbox"
                 name="attr_mec_init_var"
                 title="@{mec_init_var}"
                 value="[[1d6!]]"
               />
+            </li>
+            <li>
+              <span class="textbase">Utiliser COlib</span>&nbsp;
+              <input type="checkbox" name="attr_colib" value="1">
             </li>
           </ul>
         </div>
@@ -11219,6 +11227,7 @@ on("change:type_personnage", function (eventInfo) {
  */
 function attrStation(ship_attr, crew_attr) {
   return [
+    "colib",
     `POSTE_${ship_attr}_OQP`,
     `POSTE_${ship_attr}_NOM`,
     `POSTE_${ship_attr}_BONUS`,
@@ -11265,6 +11274,7 @@ function setStation(v, attr, fill) {
     station_attr
   ] = `[[${station_car}*${station_held}]][${fill[0]}${station_crew}] + [[${station_bonus}*${station_held}]][${fill[1]}${station_crew}]`;
   station[`EQUIP_${attr}`] = station_held === 1 ? station_crew.trim() : "aucun";
+  if (int(v.colib) === 1) station["POSTES_EQ"] = `update:${SHEET_STARSHIP}`;
   setAttrs(station);
 }
 
@@ -12325,14 +12335,15 @@ function rebuildAllShip() {
  * Rebuild derived attributes
  */
 function rebuildAll() {
-  getAttrs(["type_personnage"], function (v) {
+  getAttrs(["type_personnage", "colib"], function (v) {
     if (v.type_personnage === SHEET_PC) rebuildAllPC();
     if (v.type_personnage === SHEET_STARSHIP) rebuildAllShip();
     if (v.type_personnage === SHEET_MECHA) rebuildAllMech();
     const vehicle = isVehicle(v.type_personnage);
+    const colib = int(v.colib) === 1 ? true : false;
     const physical = vehicle ? "0" : "1";
-    const update = vehicle ? `update:${v.type_personnage}` : "";
-    setAttrs({ physical: physical, POSTES_EQ: update, sbresult: "" });
+    const update = (vehicle && colib) ? `update:${v.type_personnage}` : "";
+    setAttrs({ physical: physical, sbresult: "", POSTES_EQ: update });
   });
 }
 
@@ -12814,6 +12825,7 @@ on("clicked:hitdice", function () {
 function updateMechCrew() {
   getAttrs(
     [
+      "colib",
       "mec_crew1_car",
       "mec_crew1_bonus",
       "mec_crew1_rank",
@@ -12824,7 +12836,6 @@ function updateMechCrew() {
       "mec_crew2_status",
     ],
     function (values) {
-      if (values.mec_crew1_car === values.mec_crew2_car) return;
       attrs = {
         mec_crew_dex: 0,
         mec_crew_int: 0,
@@ -12835,12 +12846,13 @@ function updateMechCrew() {
       const crew1_rank = int(values.mec_crew1_rank);
       const crew1_status = int(values.mec_crew1_status);
       attrs[`mec_crew_${values.mec_crew1_car}`] =
-        crew1_status * Math.min(crew1_bonus, crew1_rank);
+        crew1_status * Math.sign(crew1_rank) * crew1_bonus;
       const crew2_bonus = int(values.mec_crew2_bonus);
       const crew2_rank = int(values.mec_crew2_rank);
       const crew2_status = int(values.mec_crew2_status);
       attrs[`mec_crew_${values.mec_crew2_car}`] =
-        crew2_status * Math.min(crew2_bonus, crew2_rank);
+        crew2_status * Math.sign(crew2_rank) * crew2_bonus;
+      if (int(values.colib) === 1) attrs["POSTES_EQ"] = `update:${SHEET_MECHA}`;
       setAttrs(attrs);
     }
   );
@@ -12997,6 +13009,7 @@ on(
   function () {
     getAttrs(
       [
+        "colib",
         "repeating_mecatk_crewint_bonus",
         "repeating_mecatk_crewint_rank",
         "repeating_mecatk_crewint_status",
@@ -13005,8 +13018,10 @@ on(
         const bonus = int(values.repeating_mecatk_crewint_bonus);
         const rank = int(values.repeating_mecatk_crewint_rank);
         const status = int(values.repeating_mecatk_crewint_status);
+        const postes_eq = int(values.colib) === 1 ? `update:${SHEET_MECHA}` : ""
         setAttrs({
-          repeating_mecatk_crewint: status * Math.min(bonus, rank),
+          POSTES_EQ: postes_eq,
+          repeating_mecatk_crewint: status * Math.sign(rank) * bonus,
         });
       }
     );
