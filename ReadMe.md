@@ -16,10 +16,11 @@ V4.0.0 [Screenshot](cog_v4.png)
 
 ___Chroniques Oubliées Galactiques Version 2___
 
-## V4.1.0 (2023.01.15)
+## V4.1.0 (2023.03.29)
 
 - Ajout import de statblock de vaisseau et de mécha
 - Prise en compte malus d'armure sur INIT, tests de DEX et d'ATD
+- Ajout détail des PV par niveaux
 
 ## V4.0.0 (2022.12.30)
 

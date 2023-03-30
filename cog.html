@@ -66,6 +66,7 @@
   <input type="hidden" name="attr_INIT_BUFF" value="0" />
   <input type="hidden" name="attr_DEF_BUFF" value="0" />
   <input type="hidden" name="attr_DEP_BUFF" value="0" />
+  <input type="hidden" name="attr_PV_NIVEAU" value="" />
   <input type="hidden" name="attr_PV_BUFF" value="0" />
   <!-- INPUT HIDDEN Malus Armure -->
   <input type="hidden" name="attr_ARMURE_MALUS" value="0" />
@@ -134,7 +135,7 @@
     <div style="width: 420px; vertical-align: middle; text-align: center">
       <img
         width="320px"
-        title="Version 4.1.0 - 26/02/2023"
+        title="Version 4.1.0 - 29/03/2023"
         src="https://raw.githubusercontent.com/Roll20/roll20-character-sheets/master/ChroniquesGalactiques/cog2_logo.png"
       />
       <img width="90px" height="90px" name="attr_character_token" />
@@ -4957,7 +4958,18 @@
               >
                 <option value="0" selected>Jet DV</option>
                 <option value="1">Moyenne</option>
-              </select>
+              </select><br>
+              Niv 1: <span class="sheet-levels" name="attr_pv_niv1"></span> <span name="attr_prog_pv_desc"></span> :<br>
+              Niv 2: <input type="number" class="sheet-carac" name="attr_pv_niv2" value="0">
+              4: <input type="number" class="sheet-carac" name="attr_pv_niv4" value="0">
+              6: <input type="number" class="sheet-carac" name="attr_pv_niv6" value="0">
+              8: <input type="number" class="sheet-carac" name="attr_pv_niv8" value="0">
+              10: <input type="number" class="sheet-carac" name="attr_pv_niv10" value="0">
+              <br>
+              Niv 3: <span class="sheet-levels" name="attr_pv_niv3"></span>
+              5: <span class="sheet-levels" name="attr_pv_niv5"></span>
+              7: <span class="sheet-levels" name="attr_pv_niv7"></span>
+              9: <span class="sheet-levels" name="attr_pv_niv9"></span>
             </li>
             <li>
               Magie (Space Fantasy) :
@@ -5000,6 +5012,7 @@
                   <em>Fiche de personnage</em>
                   <li>Ajout jets de capacités</li>
                   <li>Ajout traits, avantages, relations</li>
+                  <li>Ajout détail PV par niveaux</li>
                   <em>Fiche de vaisseau</em>
                   <li>Ajout fonction d'import statblock depuis PDF</li>
                   <em>Fiche de mécha</em>
@@ -10275,6 +10288,15 @@ on("sheet:opened", function () {
       });
     }
   });
+  getAttrs(["PV_NIVEAU"], function (v) {
+    const pv_niveaux = JSON.parse(v.PV_NIVEAU);
+    const attrs = {};
+    for (const niv of [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]) {
+      attrs[`pv_niv${niv}`] = int(pv_niveaux[niv-1]);
+    }
+    clog(attrs);
+    setAttrs(attrs);
+  });
   // rebuild all
   rebuildAll();
 });
@@ -12686,64 +12708,71 @@ function hitPoints(attr) {
   getAttrs(
     ["type_fiche", "NIVEAU", "DV", "CON", "PV_NIVEAU", "PV_BUFF", "prog_pv"],
     function (values) {
-      let niveau = int(values.NIVEAU);
+      const niveau = int(values.NIVEAU);
       if (niveau === 0) return;
-      let dv = int(values.DV);
+      const dv = int(values.DV);
       if (dv === 0) return;
-      let valCON = int(values.CON);
-      let pv_niveau = stringOrDefault(values.PV_NIVEAU);
+      const valCON = int(values.CON);
       let pv = [];
-      if (attr === "niveau" || attr === "con" || attr === "pv_buff") {
-        if (pv_niveau !== "") pv = JSON.parse(pv_niveau);
+      const pv_niveau = stringOrDefault(values.PV_NIVEAU);
+      if (pv_niveau !== "") pv = JSON.parse(pv_niveau);
+      while (pv.length < 10) {
+        pv.push(0) 
       }
-      let average = int(values.prog_pv) === 1 ? 1 + dv / 2 : 0;
-      let pv_buff = int(values.PV_BUFF);
+      const average = int(values.prog_pv) === 1 ? 1 + dv / 2 : 0;
+      const prog_pv_desc = int(values.prog_pv) === 1 ? "Moyennes" : "Tirages";
+      const pv_buff = int(values.PV_BUFF);
+      let pv_prog = "";
       let pv_max = 0;
       if (values.type_fiche == SHEET_STARSHIP) {
         pv_max = (dv + valCON) * niveau;
       } else {
         for (let n = 1; n <= niveau; n++) {
           let pvie = 0;
-          if (n === 1) {
-            pvie = dv + valCON; // niveau 1 : Max. DV + Mod. CON
+          if (n === 1) { // niveau 1 : Max. DV + Mod. CON
+            pv_prog += "";
+            pvie = dv + valCON; 
           } else {
-            if (n > 10) {
-              // niveaux > 10 : 1 ou 2 PV selon DV
+            if (n > 10) { // niveaux > 10 : 1 ou 2 PV selon DV
               if (dv >= 10) pvie = 2;
               else pvie = 1;
-            } else {
-              // niveaux <= 10
-              if (n % 2 === 0) {
-                // niveau pair
-                if (n > pv.length) {
-                  // nouveau niveau
-                  if (average !== 0) {
-                    pvie = average; // ... soit moyenne du DV + 1
-                  } else {
-                    pvie = getRandom(dv); // ... soit tirage de DV
-                  }
-                  if (valCON < 0) pvie += valCON; // ... + Mod. CON si négative
-                  if (pvie < 0) pvie = 0; // ... mais on ne perd pas de PV
+              pv_prog += "";
+            } else { // niveaux <= 10
+              if (n % 2 === 0) { // niveau pair
+                if (average !== 0) {
+                  pvie = average; // ... soit moyenne du DV + 1
+                  pv_prog += "";
                 } else {
-                  // niveau existant
-                  pvie = pv[n - 1];
+                  pvie = pv[n - 1]; // ... soit tirage de DV
                 }
-              } else {
-                // niveau impair
+                if (pvie === 0) pvie = getRandom(dv);
+                pv_prog += "";
+                if (valCON < 0) pvie += valCON; // ... + Mod. CON si négative
+                pv_prog += "";
+                if (pvie < 0) pvie = 0; // ... mais on ne perd pas de PV
+                pv_prog += "";
+              } else { // niveau impair
                 if (valCON > 0) pvie = valCON; // Mod. CON si positif
+                pv_prog += "";
               }
             }
           }
-          if (n > pv.length) pv.push(pvie);
-          else pv[n - 1] = pvie;
+          pv[n - 1] = pvie;
           pv_max += pvie;
         }
       }
       pv_max += pv_buff;
+      pv_prog += "";
       setAttrs({
         PV_NIVEAU: JSON.stringify(pv),
         PV_max: pv_max,
         PV: pv_max,
+        pv_niv2: pv[1] || 0,
+        pv_niv4: pv[3] || 0,
+        pv_niv6: pv[5] || 0,
+        pv_niv8: pv[7] || 0,
+        pv_niv10: pv[9] || 0,
+        prog_pv_desc
       });
     }
   );
@@ -12760,9 +12789,32 @@ on(
     "change:con",
     "change:pv_buff",
     "change:prog_pv",
+    "change:pv_niveau",
   ].join(" "),
   function (eventInfo) {
     hitPoints(eventInfo.sourceAttribute);
+  }
+);
+
+function rolledHitPoints(attr) {
+  getAttrs(["PV_NIVEAU", attr ], function (values) {
+    const pv_niveaux = JSON.parse(values.PV_NIVEAU);
+    const niv = int(attr.replace("pv_niv",""));
+    pv_niveaux[niv-1] = int(values[Object.keys(values)[1]]);
+    setAttrs({ PV_NIVEAU: JSON.stringify(pv_niveaux) });
+  });
+}
+
+on(
+  [
+    "change:pv_niv2",
+    "change:pv_niv4",
+    "change:pv_niv6",
+    "change:pv_niv8",
+    "change:pv_niv10",
+  ].join(" "),
+  function (eventInfo) {
+    rolledHitPoints(eventInfo.sourceAttribute);
   }
 );
 
@@ -12804,17 +12856,24 @@ on(
   }
 );
 
+
 /**
  * On Hit Dice button click
  * - Increase character level
  */
 on("clicked:hitdice", function () {
-  getAttrs(["NIVEAU"], function (value) {
-    let niveau = int(value.NIVEAU);
+  getAttrs(
+    ["NIVEAU", "DV", "pv_niv2", "pv_niv4", "pv_niv6", "pv_niv8", "pv_niv10"], 
+    function (values) {
+    const niveau = int(values.NIVEAU) + 1;
+    const dv = int(values.DV);
     if (niveau > 0 && niveau <= 20) {
-      setAttrs({
-        NIVEAU: niveau + 1,
-      });
+      const attrs = { NIVEAU: niveau };
+      if (niveau % 2 === 0 && niveau <= 10) {
+        const pv_niveau = `pv_niv${niveau}`;
+        if (int(values[pv_niveau]) === 0) attrs[pv_niveau] = getRandom(dv);
+      }
+      setAttrs(attrs);
     }
   });
 });

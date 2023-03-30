@@ -189,6 +189,15 @@ span.sheet-label {
   padding: 0;
 }
 
+span.sheet-levels {
+  display: inline-block; 
+  width: 3.5em; 
+  text-align: right;
+  border: 1px gray solid;
+  border-radius: 3px;
+  padding: 0 5px;
+}
+
 input[type='text'].sheet-boxability {
   width: 92%;
   border-style: none;
