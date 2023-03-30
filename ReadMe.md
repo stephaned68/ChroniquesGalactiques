@@ -10,7 +10,7 @@ Le jeu complet est paru dans le magazine [Casus Belli](http://www.black-book-edi
 
 # Version courante
 
-V4.0.0 [Screenshot](cog_v4.png)
+V4.1.0 [Screenshot](cog_v4.png)
 
 # Notes de version
 
