@@ -9,3 +9,5 @@ Cliquer sur un lien pour consulter la documentation correspondante :
 [Import de statblock de Vaisseau]({{ site.baseurl }}/import-sbship) 
 
 [Import de statblock de Mécha]({{ site.baseurl }}/import-sbmech)
+
+[Fonctions spéciales]({{ site.baseurl }}/buffs-props-rof4)
