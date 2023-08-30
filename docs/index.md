@@ -2,6 +2,8 @@
 
 Cliquer sur un lien pour consulter la documentation correspondante :
 
+[Import de profil et équipement]({{ site.baseurl }}/import-profile)
+
 [Import de statblock de PNJ]({{ site.baseurl }}/import-sbnpc)
 
 [Import de statblock de Vaisseau]({{ site.baseurl }}/import-sbship) 
