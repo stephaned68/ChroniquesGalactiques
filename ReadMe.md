@@ -6,8 +6,6 @@ Chroniques Galactiques est un jeu de r&ocirc;le futuriste complet bas&eacute; su
 
 Cette feuilles de personnage inclue quelques jets et r&egrave;gles optionnelles.
 
-Le jeu complet est paru dans le magazine [Casus Belli](http://www.black-book-editions.fr/catalogue.php?id=207) #17,18 et 19.
-
 # Version courante
 
 V4.4.0 [Screenshot](cog_v4.png)
