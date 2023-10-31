@@ -10,11 +10,16 @@ Le jeu complet est paru dans le magazine [Casus Belli](http://www.black-book-edi
 
 # Version courante
 
-V4.4.0 [Screenshot](cog_v4.png)
+V4.4.1 [Screenshot](cog_v4.png)
 
 # Notes de version
 
 ___Chroniques Oubliées Galactiques Version 2___
+
+## V4.4.1 (2023.10.31)
+
+- Fiche de personnage
+  - Correction d'un bug sur les boutons de jets de caractéristiques
 
 ## V4.4.0 (2023.09.30)
 
