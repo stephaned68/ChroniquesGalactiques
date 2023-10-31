@@ -21,7 +21,7 @@ ___Chroniques Oubliées Galactiques Version 2___
 ## V4.4.1 (2023.10.31)
 
 - Fiche de personnage
-  - Correction d'un bug sur les boutons de jets de caractéristiques
+  - Correction d'un bug empêchant l'exécution du Javascript de la fiche
 
 ## V4.4.0 (2023.09.30)
 
