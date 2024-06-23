@@ -18,7 +18,7 @@ V4.6.0 [Screenshot](cog_v4.png)
 
 ___Chroniques Oubliées Galactiques Version 2___
 
-## V4.6.0 (2024.06.15)
+## V4.6.0 (2024.06.24)
 
 - Migration de la fiche en CSE
 - Ajout de zones rétractables/extensibles
