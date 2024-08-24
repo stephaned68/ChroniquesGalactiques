@@ -670,6 +670,11 @@ textarea.sheet-sbresult {
   height: 6em;
 }
 
+ul.sheet-release-notes {
+  list-style: none; 
+  margin: 5px;
+}
+
 /* TEMPLATES */
 .sheet-rolltemplate-co1 {
   /* variables */
